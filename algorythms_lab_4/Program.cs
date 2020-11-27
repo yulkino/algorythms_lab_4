@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace algorythms_lab_4
 {
@@ -6,7 +8,8 @@ namespace algorythms_lab_4
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            new Sorter().StartProcessing();
+            Console.ReadLine();
         }
     }
 }
