@@ -8,7 +8,7 @@ namespace algorythms_lab_4
     {
         static void Main(string[] args)
         {
-            new Sorter().StartProcessing();
+            new ConsoleWorker().StartProcessing();
             Console.ReadLine();
         }
     }
