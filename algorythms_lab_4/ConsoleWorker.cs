@@ -12,40 +12,38 @@ namespace algorythms_lab_4
     {
         string[] BubbleSortedWords;
         string[] QuickSortedWords;
+        string _path;
         Dictionary<string, int> WordsCount = new Dictionary<string, int>();
         int _iterations = 1000;
-        string[] _paths = new string[]
-        {
-            "text/1.txt",
-            "text/2.txt"
-        };
 
-        string[] Parse()
+        string GetInput(string message)
         {
-            Write("Enter path: ");
-            var path = ReadLine();
+            Clear();
+            Write(message);
+            var input = ReadLine();
+            Clear();
+            return input;
+        }
+
+        string[] Parse(string path)
+        {
             if (path == "")
                 path = "text/2.txt";
+
+
             if (!File.Exists(path))
-            {
-                Clear();
-                WriteLine("Path is not found.");
-                ReadKey(true);
-                Clear();
-                return Parse();
-            }
-            var input = File.ReadAllText(path);
-            return Regex.Replace(input, @"[!@#$%^&*()+№;:?{[}\]|\\/<,>\.~\d]", " ")
+                return Parse(GetInput("Incorrect path, try again: "));
+            _path = path;
+            var input = File.ReadAllText(_path);
+            return Regex.Replace(input.ToLower(), @"[^a-zа-я_`\-]+", " ")
                 .Split(' ')
-                .Where(x => x != "")
-                .Select(x => x.ToLower())
                 .ToArray();
         }
 
         public void StartProcessing()
-        {
-            var unsortedWords = Parse();
-
+        { 
+            var unsortedWords = Parse(GetInput("Enter path: "));
+            WriteLine($"Current text file: { _path }");
             WordsCount = Sorter.CountUniqueWords(unsortedWords);
             OutputWordsCount();
 
@@ -59,30 +57,24 @@ namespace algorythms_lab_4
             //Array.Copy(unsortedWords, bubbleSortWords, unsortedWords.Length);
             //BubbleSortedWords = Sorter.BubbleSort(bubbleSortWords);
 
-            var isFirst = true;
-            foreach (var p in _paths)
+            for (var i = 0; i < _iterations; i++)
             {
-                if (isFirst)
-                    for (var i = 0; i < _iterations; i++)
-                    {
-                        var timeA = new TimeAnalizer();
-                        string[] sortWords = new string[unsortedWords.Length];
-                        Array.Copy(unsortedWords, sortWords, unsortedWords.Length);
-                        timeA.Actions += () => sort(sortWords);
-                        timeA.Analyze();
-                    }
-                isFirst = false;
-                double time = 0;
-                for (var i = 0; i < _iterations; i++)
-                {
-                    var timeAnalizer = new TimeAnalizer();
-                    string[] sortWords = new string[unsortedWords.Length];
-                    Array.Copy(unsortedWords, sortWords, unsortedWords.Length);
-                    timeAnalizer.Actions += () => sort(sortWords);
-                    time += timeAnalizer.Analyze();
-                }
-                ShowInConsoleTime(p, Math.Round(time / _iterations, 10));
+                var timeA = new TimeAnalizer();
+                string[] sortWords = new string[unsortedWords.Length];
+                Array.Copy(unsortedWords, sortWords, unsortedWords.Length);
+                timeA.Actions += () => sort(sortWords);
+                timeA.Analyze();
             }
+            var time = 0.0;
+            for (var i = 0; i < _iterations; i++)
+            {
+                var timeAnalizer = new TimeAnalizer();
+                string[] sortWords = new string[unsortedWords.Length];
+                Array.Copy(unsortedWords, sortWords, unsortedWords.Length);
+                timeAnalizer.Actions += () => sort(sortWords);
+                time += timeAnalizer.Analyze();
+            }
+            ShowInConsoleTime(_path, Math.Round(time / _iterations, 10));
         }
 
         void ShowInConsoleTime(string path, double time)
